@@ -18,9 +18,9 @@ class SuperAdminSeeder extends Seeder
     public function run()
     {
         $superAdminUser = new User([
-            'username' => 'superadmin',
-            'email'    => 'superadmin@admin.com',
-            'password' => 'superadmin',
+            'username' => 'ayesha',
+            'email'    => 'shaxyyy.03@gmail.com',
+            'password' => 'Admin123',
         ]);
 
         $this->userModel->save($superAdminUser);

@@ -26,10 +26,6 @@
           <input type="text" class="form-control" id="member_email" name="member_email" value="<?= $member['email']; ?>" disabled>
         </div>
         <div class="col-12 col-md-6 mb-3">
-          <label for="member_phone" class="form-label">Nomor telepon</label>
-          <input type="text" class="form-control" id="member_phone" name="member_phone" value="<?= $member['phone']; ?>" disabled>
-        </div>
-        <div class="col-12 col-md-6 mb-3">
           <label for="member_address" class="form-label">Alamat</label>
           <input type="text" class="form-control" id="member_address" name="member_address" value="<?= $member['address']; ?>" disabled>
         </div>
@@ -53,7 +49,7 @@
                     <div class="d-flex align-items-start" style="margin-left: 100px;">
                       <div>
                         <p style="overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;"><b><?= "{$book['title']} ({$book['year']})"; ?></b></p>
-                        <p>Pengarang: <?= $book['author']; ?></p>
+                        <p>Penulis: <?= $book['author']; ?></p>
                         <p>Penerbit: <?= $book['publisher']; ?></p>
                       </div>
                     </div>

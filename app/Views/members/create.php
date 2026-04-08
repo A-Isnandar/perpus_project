@@ -40,19 +40,26 @@
           </div>
         </div>
       </div>
+      <div class="mb-3">
+        <label for="class" class="form-label">Kelas</label>
+        <textarea class="form-control <?php if ($validation->hasError('class')) : ?>is-invalid<?php endif ?>" id="class" name="class" required><?= $oldInput['class'] ?? $member['class'] ?? ''; ?></textarea>
+        <div class="invalid-feedback">
+          <?= $validation->getError('class'); ?>
+        </div>
+        </div>
+      </div>
       <div class="row">
         <div class="col-12 col-md-6 mb-3">
           <label for="email" class="form-label">Email</label>
-          <input type="email" class="form-control <?php if ($validation->hasError('email')) : ?>is-invalid<?php endif ?>" id="email" name="email" value="<?= $oldInput['email'] ?? ''; ?>" placeholder="johndoe@gmail.com" required>
-          <div class="invalid-feedback">
+          <input type="email" 
+       pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+       class="form-control <?php if ($validation->hasError('email')) : ?>is-invalid<?php endif ?>" 
+       id="email" name="email" 
+       value="<?= $oldInput['email'] ?? ''; ?>" 
+       placeholder="johndoe@perpus.com" 
+       required>
+  <div class="invalid-feedback">
             <?= $validation->getError('email'); ?>
-          </div>
-        </div>
-        <div class="col-12 col-md-6 mb-3">
-          <label for="phone" class="form-label">Nomor telepon</label>
-          <input type="tel" class="form-control <?php if ($validation->hasError('phone')) : ?>is-invalid<?php endif ?>" id="phone" name="phone" value="<?= $oldInput['phone'] ?? ''; ?>" placeholder="+628912345" required>
-          <div class="invalid-feedback">
-            <?= $validation->getError('phone'); ?>
           </div>
         </div>
       </div>

@@ -9,6 +9,10 @@ use App\Models\MemberModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\I18n\Time;
 use CodeIgniter\RESTful\ResourceController;
+use Dompdf\Dompdf;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 
 class FinesController extends ResourceController
 {
@@ -23,6 +27,7 @@ class FinesController extends ResourceController
         $this->fineModel = new FineModel;
         $this->memberModel = new MemberModel;
         $this->bookModel = new BookModel;
+   
 
         helper('upload');
     }
@@ -147,6 +152,118 @@ class FinesController extends ResourceController
             'return'     => $return[array_key_first($return)]
         ]);
     }
+
+public function exportPdf()
+{
+    $paidOff = $this->request->getGet('paid-off') === 'true';
+
+    $builder = $this->fineModel
+        ->select('fines.*, members.first_name, members.last_name, books.title, loans.return_date')
+        ->join('loans', 'loans.id = fines.loan_id', 'left')
+        ->join('members', 'members.id = loans.member_id', 'left')
+        ->join('books', 'books.id = loans.book_id', 'left');
+
+    if ($paidOff) {
+        $builder->where('fines.amount_paid >= fines.fine_amount');
+    } else {
+        // tampilkan juga yang belum diisi amount_paid (NULL)
+        $builder->groupStart()
+                ->where('fines.amount_paid < fines.fine_amount')
+                ->orWhere('fines.amount_paid IS NULL')
+                ->groupEnd();
+    }
+
+    $fines = $builder->findAll();
+
+    $data = [
+        'title' => 'Laporan Denda ' . ($paidOff ? '(Lunas)' : '(Belum Lunas)'),
+        'message' => empty($fines) ? 'Tidak ada data denda sesuai filter.' : null,
+        'fines' => $fines,
+    ];
+
+    $html = view('fines/pdf_export', $data);
+
+    $dompdf = new \Dompdf\Dompdf();
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'landscape');
+    $dompdf->render();
+    $dompdf->stream('laporan_denda_' . date('Y-m-d_H-i-s') . '.pdf', ["Attachment" => true]);
+}
+
+ 
+
+public function exportExcel($status = null)
+{
+    $paidOff = ($status === 'paid');
+
+    $builder = $this->fineModel
+        ->select('fines.*, loans.uid as loan_uid, loans.return_date, members.first_name, members.last_name, books.title')
+        ->join('loans', 'loans.id = fines.loan_id', 'left')
+        ->join('members', 'members.id = loans.member_id', 'left')
+        ->join('books', 'books.id = loans.book_id', 'left');
+
+    if ($paidOff) {
+        $builder->groupStart()
+                ->where('fines.paid_at IS NOT NULL')
+                ->orWhere('fines.amount_paid >= fines.fine_amount')
+            ->groupEnd();
+        $title = 'Laporan Denda Lunas';
+    } else {
+        $builder->groupStart()
+                ->where('fines.paid_at IS NULL')
+                ->orWhere('fines.amount_paid < fines.fine_amount')
+            ->groupEnd();
+        $title = 'Laporan Denda Belum Lunas';
+    }
+
+    $fines = $builder->findAll();
+
+    if (empty($fines)) {
+        return redirect()->back()->with('error', 'Tidak ada data ditemukan.');
+    }
+
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    $sheet->setCellValue('A1', $title);
+    $sheet->mergeCells('A1:G1');
+    $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+
+    $headers = ['No', 'Nama Peminjam', 'Judul Buku', 'Loan UID', 'Tgl Pengembalian', 'Denda Dibayar', 'Jumlah Denda'];
+    $sheet->fromArray($headers, null, 'A3');
+    $sheet->getStyle('A3:G3')->getFont()->setBold(true);
+
+    $row = 4;
+    foreach ($fines as $index => $fine) {
+        $returnDate = $fine['return_date'] ? date('d/m/Y', strtotime($fine['return_date'])) : '-';
+        $sheet->fromArray([
+            $index + 1,
+            ($fine['first_name'] ?? '-') . ' ' . ($fine['last_name'] ?? '-'),
+            $fine['title'] ?? '-',
+            $fine['loan_uid'] ?? '-',
+            $returnDate,
+            'Rp' . number_format($fine['amount_paid'] ?? 0, 0, ',', '.'),
+            'Rp' . number_format($fine['fine_amount'] ?? 0, 0, ',', '.'),
+        ], null, 'A' . $row++);
+    }
+
+    foreach (range('A', 'G') as $col) {
+        $sheet->getColumnDimension($col)->setAutoSize(true);
+    }
+
+    $filename = $paidOff ? 'denda_lunas.xlsx' : 'denda_belum_lunas.xlsx';
+    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header("Content-Disposition: attachment; filename=\"{$filename}\"");
+    header('Cache-Control: max-age=0');
+
+    $writer->save('php://output');
+    exit;
+}
+
+
+
 
     /**
      * Return a new resource object, with default properties

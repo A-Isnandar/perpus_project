@@ -65,7 +65,7 @@ $coverImageFilePath = BOOK_COVER_URI . $book['book_cover'];
         <div class="w-100 mb-2">
           <h2 class="mb-2"><?= $book['title']; ?></h2>
           <h5>Tahun: <?= $book['year']; ?></h5>
-          <h5>Pengarang: <?= $book['author']; ?></h5>
+          <h5>Penulis: <?= $book['author']; ?></h5>
           <h5>Penerbit: <?= $book['publisher']; ?></h5>
           <h5>Kategori: <?= $book['category']; ?></h5>
           <h5>Rak: <?= $book['rack']; ?>, Lantai <?= $book['floor']; ?></h5>

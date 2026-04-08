@@ -9,6 +9,9 @@ use App\Models\LoanModel;
 use App\Models\RackModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\RESTful\ResourceController;
+use Dompdf\Dompdf;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class BooksController extends ResourceController
 {
@@ -25,6 +28,7 @@ class BooksController extends ResourceController
         $this->rackModel = new RackModel;
         $this->bookStockModel = new BookStockModel;
         $this->loanModel = new LoanModel;
+        
 
         helper('upload');
     }
@@ -146,7 +150,7 @@ class BooksController extends ResourceController
         if (!$this->validate([
             'cover'     => 'is_image[cover]|mime_in[cover,image/jpg,image/jpeg,image/gif,image/png,image/webp]|max_size[cover,5120]',
             'title'     => 'required|string|max_length[127]',
-            'author'    => 'required|alpha_numeric_punct|max_length[64]',
+            'author'    => 'required|string|max_length[64]',
             'publisher' => 'required|string|max_length[64]',
             'isbn'      => 'required|numeric|min_length[10]|max_length[13]',
             'year'      => 'required|numeric|min_length[4]|max_length[4]|less_than_equal_to[2100]',
@@ -358,5 +362,86 @@ class BooksController extends ResourceController
     return view('books/request_info');
 }
 
+// Export PDF
+    public function exportPdf()
+    {
+        $books = $this->bookModel
+            ->select('books.*, categories.name as category, racks.name as rack, book_stock.quantity')
+            ->join('categories', 'categories.id = books.category_id', 'left')
+            ->join('racks', 'racks.id = books.rack_id', 'left')
+            ->join('book_stock', 'book_stock.book_id = books.id AND book_stock.deleted_at IS NULL', 'left')
+            ->findAll();
+
+        $data = [
+            'title' => 'Laporan Buku',
+            'books' => $books,
+        ];
+
+        $html = view('books/pdf_export', $data);
+
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+        $dompdf->stream('laporan_buku_' . date('Y-m-d_H-i-s') . '.pdf', ["Attachment" => true]);
+        exit;
+    }
+
+    // Export Excel
+   public function exportExcel()
+{
+    $books = $this->bookModel
+        ->select('books.*, categories.name as category, racks.name as rack, book_stock.quantity')
+        ->join('categories', 'categories.id = books.category_id', 'left')
+        ->join('racks', 'racks.id = books.rack_id', 'left')
+        ->join('book_stock', 'book_stock.book_id = books.id AND book_stock.deleted_at IS NULL', 'left')
+        ->findAll();
+
+    if (empty($books)) {
+        return redirect()->back()->with('error', 'Tidak ada data ditemukan.');
+    }
+
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Judul laporan
+    $sheet->setCellValue('A1', 'Laporan Buku');
+    $sheet->mergeCells('A1:G1');
+    $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+
+    // Header kolom
+    $headers = ['No', 'Judul', 'Author', 'Kategori', 'Rak', 'Tahun', 'Jumlah'];
+    $sheet->fromArray($headers, null, 'A3');
+    $sheet->getStyle('A3:G3')->getFont()->setBold(true);
+
+    // Isi data
+    $row = 4;
+    foreach ($books as $i => $book) {
+        $sheet->fromArray([
+            $i + 1,
+            $book['title'] ?? '-',
+            $book['author'] ?? '-',
+            $book['category'] ?? '-',
+            $book['rack'] ?? '-',
+            $book['year'] ?? '-',
+            $book['quantity'] ?? 0,
+        ], null, 'A' . $row++);
+    }
+
+    // Auto width kolom
+    foreach (range('A', 'G') as $col) {
+        $sheet->getColumnDimension($col)->setAutoSize(true);
+    }
+
+    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="laporan_buku.xlsx"');
+    header('Cache-Control: max-age=0');
+
+    $writer->save('php://output');
+    exit;
+}
 
 }
+

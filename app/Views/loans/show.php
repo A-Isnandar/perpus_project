@@ -64,14 +64,14 @@ if (session()->getFlashdata('msg')) : ?>
     <?php
     $memberData = [
       'Nama Lengkap'  => [$loan['first_name'] . ' ' . $loan['last_name']],
+      'Kelas'         => $loan['class'],
       'Email'         => $loan['email'],
-      'Nomor telepon' => $loan['phone'],
       'Alamat'        => $loan['address'],
     ];
 
     $bookData = [
       'Judul buku'    => [$loan['title']],
-      'Pengarang'     => $loan['author'],
+      'Penulis'     => $loan['author'],
       'Penerbit'      => $loan['publisher'],
       'Rak'           => $loan['rack']
     ];

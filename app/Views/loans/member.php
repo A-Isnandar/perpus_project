@@ -9,8 +9,8 @@
         <tr>
           <th scope="col">#</th>
           <th scope="col">Nama lengkap</th>
+          <th scope="col">Kelas</th>
           <th scope="col">Email</th>
-          <th scope="col">Phone</th>
           <th scope="col">Alamat</th>
           <th scope="col">Jenis kelamin</th>
           <th scope="col" class="text-center">Aksi</th>
@@ -25,8 +25,8 @@
               <td>
                 <b><?= $member['first_name'] . ' ' . $member['last_name']; ?></b>
               </td>
+              <td><?= $member['class']; ?></td>
               <td><?= $member['email']; ?></td>
-              <td><?= $member['phone']; ?></td>
               <td><?= $member['address']; ?></td>
               <td><?= $member['gender']; ?></td>
               <td style="width: 120px;" class="text-center">

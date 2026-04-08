@@ -21,7 +21,6 @@ class MemberFabricator extends MemberModel
             'first_name'    => $firstName,
             'last_name'     => $lastName,
             'email'         => $faker->email,
-            'phone'         => $faker->phoneNumber,
             'address'       => $faker->address,
             'date_of_birth' => $faker->date,
             'gender'        => $gender,

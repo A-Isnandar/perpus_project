@@ -18,6 +18,12 @@ class Home extends BaseController
         return view('home/home');
     }
 
+    public function test()
+{
+    dd(env('database.default.username'));
+
+}
+
     public function book(): string
     {
         $itemPerPage = 20;

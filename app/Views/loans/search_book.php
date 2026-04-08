@@ -15,7 +15,7 @@
       <div class="col-12 col-lg-6">
         <h5 class="card-title fw-semibold mb-4">Pilih Buku</h5>
         <div class="mb-4">
-          <label for="search" class="form-label">Cari Judul, pengarang atau penerbit buku</label>
+          <label for="search" class="form-label">Cari Judul, penulis atau penerbit buku</label>
           <input type="text" class="form-control" id="search" name="search" placeholder="Cari buku">
           <div class="invalid-feedback">
           </div>
@@ -32,8 +32,8 @@
 
           $tableData = [
             'Nama Lengkap'  => [$member['first_name'] . ' ' . $member['last_name']],
+            'Kelas'         => $member['class'],
             'Email'         => $member['email'],
-            'Nomor telepon' => $member['phone'],
             'Alamat'        => $member['address'],
             'Tanggal lahir' => Time::parse($member['date_of_birth'], locale: 'id')->toLocalizedString('d MMMM Y'),
             'Jenis kelamin' => $member['gender'] == 'Male' ? 'Laki-laki' : 'Perempuan',

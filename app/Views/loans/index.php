@@ -41,6 +41,14 @@ if (session()->getFlashdata('msg')) : ?>
               Peminjaman baru
             </a>
           </div>
+          <div class="d-flex gap-2 justify-content-md-end mb-3">
+          <a href="<?= base_url('admin/loans/exportPdf'); ?>" class="btn btn-danger py-2">
+              <i class="ti ti-file-text"></i> PDF
+          </a>
+          <a href="<?= base_url('admin/loans/exportExcel'); ?>" class="btn btn-success py-2">
+              <i class="ti ti-file-spreadsheet"></i> Excel
+          </a>
+      </div>
         </div>
       </div>
     </div>

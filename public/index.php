@@ -42,6 +42,12 @@ if (getcwd() . DIRECTORY_SEPARATOR !== FCPATH) {
  * our autoloader, along with Composer's, loads our constants
  * and fires up an environment-specific bootstrapping.
  */
+ // Detect environment from .env
+if (getenv('CI_ENVIRONMENT')) {
+    define('ENVIRONMENT', getenv('CI_ENVIRONMENT'));
+} else {
+    define('ENVIRONMENT', 'development');
+}
 
 // LOAD OUR PATHS CONFIG FILE
 // This is the line that might need to be changed, depending on your folder structure.

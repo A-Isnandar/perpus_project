@@ -13,12 +13,14 @@ class MemberModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
+
+    // Tambahkan "class" di sini
     protected $allowedFields    = [
         'uid',
         'first_name',
         'last_name',
+        'class',
         'email',
-        'phone',
         'address',
         'date_of_birth',
         'gender',

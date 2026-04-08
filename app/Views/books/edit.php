@@ -52,8 +52,8 @@
             </div>
           </div>
           <div class="mb-3">
-            <label for="author" class="form-label">Pengarang</label>
-            <input type="text" class="form-control <?php if ($validation->hasError('author')) : ?>is-invalid<?php endif ?>" id="author" name="author" value="<?= $oldInput['author'] ?? $book['author']; ?>" required>
+            <label for="author" class="form-label">Penulis</label>
+            <input type="text" class="form-control <?php if ($validation->hasError('author')) : ?>is-invalid<?php endif ?>" id="author" name="author" value="<?= $oldInput['author'] ?? $book['author']; ?>"  required>
             <div class="invalid-feedback">
               <?= $validation->getError('author'); ?>
             </div>

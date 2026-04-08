@@ -49,7 +49,7 @@
             </div>
           </div>
           <div class="mb-3">
-            <label for="author" class="form-label">Pengarang</label>
+            <label for="author" class="form-label">Penulis</label>
             <input type="text" class="form-control <?php if ($validation->hasError('author')) : ?>is-invalid<?php endif ?>" id="author" name="author" value="<?= $oldInput['author'] ?? ''; ?>" required>
             <div class="invalid-feedback">
               <?= $validation->getError('author'); ?>

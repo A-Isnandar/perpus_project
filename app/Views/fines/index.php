@@ -41,6 +41,26 @@ if (session()->getFlashdata('msg')) : ?>
                 <button class="btn btn-outline-secondary" type="submit" id="searchButton">Cari</button>
               </div>
             </form>
+
+          <div class="d-flex flex-wrap gap-2 mb-3">
+              <!-- Tombol Export PDF -->
+              <a href="<?= base_url('admin/fines/exportPdf?paid-off=true') ?>" class="btn btn-success">
+                  <i class="fa fa-file-pdf-o"></i> Ekspor PDF Lunas
+              </a>
+              <a href="<?= base_url('admin/fines/exportPdf?paid-off=false') ?>" class="btn btn-danger">
+                  <i class="fa fa-file-pdf-o"></i> Ekspor PDF Belum Lunas
+              </a>
+
+              <!-- Tombol Export Excel -->
+              <a href="<?= base_url('admin/fines/exportExcel/paid') ?>" class="btn btn-success">
+                  <i class="fa fa-file-excel-o"></i> Export Excel Lunas
+              </a>
+              <a href="<?= base_url('admin/fines/exportExcel/unpaid') ?>" class="btn btn-danger">
+                  <i class="fa fa-file-excel-o"></i> Export Excel Belum Lunas
+              </a>
+          </div>
+
+          </div>
           </div>
         </div>
       </div>

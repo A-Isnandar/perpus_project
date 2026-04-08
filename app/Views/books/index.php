@@ -44,6 +44,17 @@
               Tambah Data Buku
             </a>
           </div>
+          <div class="d-flex gap-2">
+          <a href="<?= base_url('admin/books/exportPdf'); ?>" class="btn btn-danger py-2">
+            <i class="ti ti-file-pdf"></i>
+            Export PDF
+          </a>
+          <a href="<?= base_url('admin/books/exportExcel'); ?>" class="btn btn-success py-2">
+            <i class="ti ti-file-spreadsheet"></i>
+            Export Excel
+          </a>
+        </div>
+
         </div>
       </div>
     </div>

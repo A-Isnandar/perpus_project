@@ -47,13 +47,13 @@
       <!-- Isi carousel -->
       <div class="carousel-inner rounded-3 shadow-lg">
         <div class="carousel-item active">
-          <img src="<?= base_url('assets/images/dashboard.jpg'); ?>" class="d-block w-100" alt="Gambar 1">
+          <img src="<?= base_url('assets/images/dashb3.jpg'); ?>" class="d-block w-100" alt="Gambar 1">
         </div>
         <div class="carousel-item">
           <img src="<?= base_url('assets/images/dashboard2.jpg'); ?>" class="d-block w-100" alt="Gambar 2">
         </div>
         <div class="carousel-item">
-          <img src="<?= base_url('assets/images/dashboard3.jpg'); ?>" class="d-block w-100" alt="Gambar 3">
+          <img src="<?= base_url('assets/images/dashb1.jpg'); ?>" class="d-block w-100" alt="Gambar 3">
         </div>
       </div>
 
@@ -74,7 +74,7 @@
 
 <!-- WhatsApp Icon -->
 <div class="whatsapp-icon">
-  <a href="https://wa.me/6285174145156?text=Halo%20admin%2C%20saya%20mau%20pinjam%20buku.%20Bagaimana%20ya%20caranya%3F" target="_blank">
+  <a href="https://wa.me/6287781072859?text=Halo%20admin%2C%20saya%20mau%20pinjam%20buku.%20Bagaimana%20ya%20caranya%3F" target="_blank">
     <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
   </a>
 </div>

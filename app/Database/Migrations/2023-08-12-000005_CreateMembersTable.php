@@ -32,10 +32,6 @@ class CreateMembersTable extends Migration
                 'type'          => 'VARCHAR',
                 'constraint'    => 255,
             ],
-            'phone' => [
-                'type'          => 'VARCHAR',
-                'constraint'    => 20,
-            ],
             'address' => [
                 'type'          => 'TEXT',
                 'null'          => true,

@@ -10,6 +10,9 @@ use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\Method;
 use CodeIgniter\I18n\Time;
 use CodeIgniter\RESTful\ResourceController;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Dompdf\Dompdf;
 
 class LoansController extends ResourceController
 {
@@ -22,7 +25,7 @@ class LoansController extends ResourceController
         $this->loanModel = new LoanModel;
         $this->memberModel = new MemberModel;
         $this->bookModel = new BookModel;
-
+        helper('url');
         helper('upload');
     }
 
@@ -401,4 +404,80 @@ class LoansController extends ResourceController
         session()->setFlashdata(['msg' => 'Loan deleted successfully']);
         return redirect()->to('admin/loans');
     }
+
+     // --- Export PDF ---
+     public function exportPdf()
+     {
+         $loans = $this->loanModel
+             ->select('members.first_name, members.last_name, books.title, loans.quantity, loans.loan_date, loans.due_date')
+             ->join('members', 'loans.member_id = members.id', 'LEFT')
+             ->join('books', 'loans.book_id = books.id', 'LEFT')
+             ->where('loans.return_date IS NULL') // <-- Hanya yang belum dikembalikan
+             ->findAll();
+     
+         if (empty($loans)) {
+             return redirect()->to('admin/loans')->with('msg', 'Belum ada data peminjaman yang belum dikembalikan untuk diexport.');
+         }
+     
+         foreach ($loans as &$loan) {
+             $loan['member_name'] = "{$loan['first_name']} {$loan['last_name']}";
+         }
+     
+         $html = view('loans/pdf_template', ['loans' => $loans]);
+     
+         $dompdf = new Dompdf();
+         $dompdf->loadHtml($html);
+         $dompdf->setPaper('A4', 'landscape');
+         $dompdf->render();
+         $dompdf->stream('peminjaman_belum_kembali_' . date('Ymd_His') . '.pdf', ['Attachment' => true]);
+         exit;
+     }
+
+     
+     public function exportExcel()
+{
+    $loans = $this->loanModel
+        ->select('members.first_name, members.last_name, books.title, loans.quantity, loans.loan_date, loans.due_date')
+        ->join('members', 'loans.member_id = members.id', 'LEFT')
+        ->join('books', 'loans.book_id = books.id', 'LEFT')
+        ->where('loans.return_date IS NULL') // <-- Hanya yang belum dikembalikan
+        ->findAll();
+
+    if (empty($loans)) {
+        return redirect()->to('admin/loans')->with('msg', 'Belum ada data peminjaman yang belum dikembalikan untuk diexport.');
+    }
+
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    $sheet->setCellValue('A1', 'No');
+    $sheet->setCellValue('B1', 'Nama Peminjam');
+    $sheet->setCellValue('C1', 'Judul Buku');
+    $sheet->setCellValue('D1', 'Jumlah');
+    $sheet->setCellValue('E1', 'Tanggal Pinjam');
+    $sheet->setCellValue('F1', 'Tenggat');
+
+    $row = 2;
+    $no = 1;
+    foreach ($loans as $loan) {
+        $sheet->setCellValue('A' . $row, $no++);
+        $sheet->setCellValue('B' . $row, "{$loan['first_name']} {$loan['last_name']}");
+        $sheet->setCellValue('C' . $row, $loan['title']);
+        $sheet->setCellValue('D' . $row, $loan['quantity']);
+        $sheet->setCellValue('E' . $row, $loan['loan_date']);
+        $sheet->setCellValue('F' . $row, $loan['due_date']);
+        $row++;
+    }
+
+    $writer = new Xlsx($spreadsheet);
+    $filename = 'peminjaman_belum_kembali_' . date('Ymd_His') . '.xlsx';
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header("Content-Disposition: attachment; filename=\"$filename\"");
+    header('Cache-Control: max-age=0');
+
+    $writer->save('php://output');
+    exit;
+}
+
 }
